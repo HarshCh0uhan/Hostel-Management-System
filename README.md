@@ -2,6 +2,17 @@
 
 A RESTful API for managing hostel students, rooms, complaints, and leave requests.
 
+**************Login As Admin-******************************
+
+/api/auth/login
+email - admin@test.com
+password - Admin@1234
+
+/api/auth/register-admin (For registering admin)
+(It will be requiring admin_secret_key make a .env file in backend)
+
+***************************************************************
+
 ## Tech Stack
 - Node.js + Express.js
 - MongoDB + Mongoose
