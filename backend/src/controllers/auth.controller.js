@@ -83,6 +83,26 @@ export const login = async (req, res) => {
         validateRegister(req.body)
 
         const {username, email, password} = req.body;
+
+        const userData = await User.findOne({email}).select('+password');
+        if(!userData) throw new Error("Invalid Email or Password")
+
+        const verifyPassword = await bcrypt.compare(userData.password, password);
+        if(!verifyPassword) throw new Error("Invalid Email or Password");
+
+        const token = generateToken(userData);
+        console.log("Token Generated");
+
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "None",
+            maxAge: 7 * 24 * 60 * 60 * 1000
+        }).status(201).json({
+            success: true,
+            message: "Login Successfull"
+        })
+
     } catch (err) {
         console.error("Error: ", err.message);
         res.status(400).json(err.message);
@@ -91,7 +111,12 @@ export const login = async (req, res) => {
 
 export const logout = async (req, res) => {
     try {
-
+        res.clearCookie('token', {
+            path: '/'
+        }).status(200).json({
+            success: true,
+            message: "Logout Successfull"
+        })
     } catch (err) {
         console.error("Error: ", err.message);
         res.status(400).json(err.message);
