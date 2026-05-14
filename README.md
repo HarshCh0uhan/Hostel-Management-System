@@ -1,205 +1,321 @@
-# Hostel Management System — Backend
+# Hostel Management System — Frontend
 
-A RESTful API for managing hostel students, rooms, complaints, and leave requests.
+Frontend application for the Hostel Management System built using React, Vite, Tailwind CSS, and React Router.  
+This frontend connects with the backend REST API to manage authentication, rooms, complaints, leave requests, and admin operations.
 
-**************Login As Admin-******************************
+---
 
-/api/auth/login
-- Admin Login
-email - admin@test.com
-password - Admin@1234
+# Features
 
--Student Login
-email - student@test.com
-password - Test@1234
+## Student Features
+- Student registration and login
+- View available rooms
+- Raise complaints
+- Apply for leave
+- Track complaint and leave status
+- View personal dashboard
 
+## Admin Features
+- Admin login
+- Dashboard statistics
+- Manage rooms
+- View and manage students
+- Manage complaints
+- Approve or reject leave requests
 
-/api/auth/register-admin (For registering admin)
-(It will be requiring admin_secret_key make a .env file in backend)
+---
 
-***************************************************************
+# Tech Stack
 
-## Tech Stack
-- Node.js + Express.js
-- MongoDB + Mongoose
-- JWT Authentication (cookie-based)
-- bcryptjs for password hashing
+- React.js
+- Vite
+- Tailwind CSS
+- React Router DOM
+- Axios
 
-## Setup
+---
+
+# Backend Requirement
+
+The backend server must be running before starting the frontend.
+
+Backend repository should support:
+- JWT Authentication
+- Cookie-based authentication
+- CORS enabled with credentials
+
+---
+
+# Backend CORS Setup
+
+Install CORS in backend:
+
+```bash
+npm install cors
+```
+
+Add CORS middleware in backend `app.js` before routes:
+
+```js
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true,
+}));
+```
+
+---
+
+# Project Setup
+
+## 1. Create Frontend
+
+```bash
+npm create vite@latest frontend -- --template react
+```
+
+## 2. Move into frontend directory
+
+```bash
+cd frontend
+```
+
+## 3. Install Dependencies
+
+```bash
+npm install
+```
+
+Install required packages:
+
+```bash
+npm install react-router-dom axios
+```
+
+Install Tailwind CSS:
+
+```bash
+npm install -D tailwindcss@3 postcss autoprefixer
+```
+
+Initialize Tailwind:
+
+```bash
+npx tailwindcss init -p
+```
+
+---
+
+# Tailwind Configuration
+
+Update `tailwind.config.js`:
+
+```js
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ["./index.html", "./src/**/*.{js,jsx}"],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+};
+```
+
+---
+
+# Global Styles
+
+Update `src/index.css`:
+
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+}
+```
+
+---
+
+# Frontend Structure
+
+```text
+frontend/
+├── src/
+│   ├── api/
+│   │   └── axios.js
+│   ├── context/
+│   │   └── AuthContext.jsx
+│   ├── components/
+│   │   ├── Layout.jsx
+│   │   └── ProtectedRoute.jsx
+│   ├── pages/
+│   │   ├── Login.jsx
+│   │   ├── Register.jsx
+│   │   ├── student/
+│   │   │   ├── Dashboard.jsx
+│   │   │   ├── Rooms.jsx
+│   │   │   ├── Complaints.jsx
+│   │   │   └── Leaves.jsx
+│   │   └── admin/
+│   │       ├── Dashboard.jsx
+│   │       ├── Rooms.jsx
+│   │       ├── Students.jsx
+│   │       ├── Complaints.jsx
+│   │       └── Leaves.jsx
+│   ├── App.jsx
+│   ├── main.jsx
+│   └── index.css
+├── package.json
+├── tailwind.config.js
+└── vite.config.js
+```
+
+---
+
+# Authentication
+
+Authentication is handled using:
+- JWT tokens
+- HTTP-only cookies
+- Context API for global auth state
+
+Protected routes are used for:
+- Logged-in users
+- Admin-only pages
+
+---
+
+# API Configuration
+
+Axios is configured with:
+- Backend base URL
+- `withCredentials: true`
+
+Example backend URL:
+
+```text
+http://localhost:3000/api
+```
+
+---
+
+# Available Pages
+
+## Public Pages
+- Login
+- Register
+
+## Student Pages
+- Dashboard
+- Rooms
+- Complaints
+- Leaves
+
+## Admin Pages
+- Dashboard
+- Room Management
+- Student Management
+- Complaint Management
+- Leave Management
+
+---
+
+# Routing
+
+Frontend uses React Router DOM for:
+- Protected routes
+- Nested layouts
+- Role-based routing
+- Automatic redirects
+
+---
+
+# State Management
+
+Global authentication state is managed using:
+- React Context API
+- React hooks
+
+---
+
+# UI Design
+
+The UI is built with:
+- Tailwind CSS utility classes
+- Responsive layouts
+- Sidebar navigation
+- Dashboard cards
+- Form validation states
+
+---
+
+# Running the Application
+
+## Start Backend
 
 ```bash
 cd backend
-npm install
-cp .env.example .env   # fill in your values
 npm run dev
 ```
 
-## Environment Variables
+## Start Frontend
 
-| Variable | Description |
+```bash
+cd frontend
+npm run dev
+```
+
+Frontend will run on:
+
+```text
+http://localhost:5173
+```
+
+---
+
+# Installed Packages
+
+| Package | Purpose |
 |---|---|
-| `PORT` | Server port (default: 3000) |
-| `MONGODB_URI` | MongoDB connection string |
-| `JWT_SECRET` | Secret key for JWT signing |
-| `ADMIN_SECRET_KEY` | Key required to register an admin |
-| `NODE_ENV` | `development` or `production` |
+| react-router-dom | Client-side routing |
+| axios | API requests |
+| tailwindcss | Styling |
+| postcss | Tailwind dependency |
+| autoprefixer | CSS vendor prefixes |
 
 ---
 
-## API Reference
+# Environment Notes
 
-### Auth  `/api/auth`
-
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| POST | `/register` | ❌ | Register student |
-| POST | `/register-admin` | ❌ | Register admin (requires adminSecretKey) |
-| POST | `/login` | ❌ | Login |
-| POST | `/logout` | ❌ | Logout |
-| GET | `/me` | ✅ | Get logged-in user profile |
-
-**Register body:**
-```json
-{ "username": "john", "email": "john@example.com", "password": "Pass@1234" }
-```
-
-**Register Admin body:**
-```json
-{ "username": "admin1", "email": "admin@hostel.com", "password": "Admin@1234", "adminSecretKey": "your_key" }
-```
+Ensure:
+- Backend is running
+- MongoDB is connected
+- CORS is enabled
+- Cookies are allowed in browser
 
 ---
 
-### Rooms  `/api/rooms`
+# Recommended Improvements
 
-| Method | Endpoint | Role | Description |
-|---|---|---|---|
-| GET | `/` | Any | List all rooms (filter: `?status=vacant&type=double`) |
-| GET | `/:id` | Any | Get room details |
-| POST | `/` | Admin | Create room |
-| PUT | `/:id` | Admin | Update room |
-| DELETE | `/:id` | Admin | Delete room |
-| POST | `/:id/assign` | Admin | Assign student to room |
-| POST | `/:id/remove` | Admin | Remove student from room |
-
-**Create Room body:**
-```json
-{
-  "roomNumber": "101",
-  "floor": 1,
-  "capacity": 2,
-  "type": "double",
-  "monthlyRent": 5000,
-  "amenities": { "ac": false, "wifi": true, "attached_bathroom": false }
-}
-```
+Future enhancements:
+- Dark mode
+- Notifications
+- Real-time complaint updates
+- File uploads
+- Attendance system
+- Payment integration
+- Room allocation automation
 
 ---
 
-### Complaints  `/api/complaints`
+# Author
 
-| Method | Endpoint | Role | Description |
-|---|---|---|---|
-| POST | `/` | Student | Raise a complaint |
-| GET | `/my` | Student | View own complaints (filter: `?status=pending`) |
-| DELETE | `/:id` | Student | Delete pending complaint |
-| GET | `/` | Admin | View all complaints (filter: `?status=&category=`) |
-| PUT | `/:id/status` | Admin | Update status |
-
-**Create Complaint body:**
-```json
-{
-  "category": "electricity",
-  "title": "Fan not working",
-  "description": "The ceiling fan in room 101 stopped working."
-}
-```
-Categories: `electricity`, `water`, `cleaning`, `internet`, `other`
-
-**Update Status body:**
-```json
-{ "status": "resolved", "adminNote": "Electrician fixed the fan." }
-```
-
----
-
-### Leave Requests  `/api/leaves`
-
-| Method | Endpoint | Role | Description |
-|---|---|---|---|
-| POST | `/` | Student | Apply for leave |
-| GET | `/my` | Student | View own leaves |
-| DELETE | `/:id` | Student | Cancel pending leave |
-| GET | `/` | Admin | View all leave requests |
-| PUT | `/:id/review` | Admin | Approve or reject |
-
-**Apply Leave body:**
-```json
-{
-  "fromDate": "2024-12-20",
-  "toDate": "2024-12-25",
-  "reason": "Family function",
-  "destination": "Mumbai",
-  "contactDuringLeave": "+91-9876543210"
-}
-```
-
----
-
-### Admin  `/api/admin`
-
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | `/dashboard` | Stats: students, rooms, complaints, leaves |
-| GET | `/students` | All students (search: `?search=john`) |
-| GET | `/students/:id` | Student profile + their complaints & leaves |
-| DELETE | `/students/:id` | Remove student |
-
----
-
-## Role-Based Access
-
-| Feature | Student | Admin |
-|---|---|---|
-| View own profile | ✅ | ✅ |
-| View room details | ✅ | ✅ |
-| Submit complaint | ✅ | ❌ |
-| Apply for leave | ✅ | ❌ |
-| Manage rooms | ❌ | ✅ |
-| Update complaint status | ❌ | ✅ |
-| Approve/reject leaves | ❌ | ✅ |
-| Dashboard stats | ❌ | ✅ |
-
-## Project Structure
-
-```
-backend/
-├── src/
-│   ├── app.js                  # Entry point
-│   ├── config/
-│   │   └── db.js
-│   ├── controllers/
-│   │   ├── auth.controller.js
-│   │   ├── room.controller.js
-│   │   ├── complaint.controller.js
-│   │   ├── leave.controller.js
-│   │   └── admin.controller.js
-│   ├── middleware/
-│   │   └── auth.middleware.js
-│   ├── models/
-│   │   ├── user.js
-│   │   ├── room.js
-│   │   ├── complaint.js
-│   │   └── leave.js
-│   ├── routes/
-│   │   ├── auth.route.js
-│   │   ├── room.route.js
-│   │   ├── complaint.route.js
-│   │   ├── leave.route.js
-│   │   └── admin.route.js
-│   └── utils/
-│       ├── jwt.js
-│       └── validation.js
-├── .env.example
-└── package.json
-```
+Hostel Management System Project  
+Built using MERN Stack
