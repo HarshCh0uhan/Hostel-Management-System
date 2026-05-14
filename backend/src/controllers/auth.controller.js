@@ -41,7 +41,7 @@ export const register = async (req, res) => {
 
 export const registerAdmin = async (req, res) => {
     try {
-        validateLogin(req.body)
+        validateRegister(req.body)
 
         const {username, email, password, adminSecretKey} = req.body;
 
@@ -80,15 +80,15 @@ export const registerAdmin = async (req, res) => {
 
 export const login = async (req, res) => {
     try {
-        validateRegister(req.body)
+        validateLogin(req.body)
 
-        const {username, email, password} = req.body;
+        const {email, password} = req.body;
 
         const userData = await User.findOne({email}).select('+password');
         if(!userData) throw new Error("Invalid Email or Password")
 
-        const verifyPassword = await bcrypt.compare(userData.password, password);
-        if(!verifyPassword) throw new Error("Invalid Email or Password");
+        const verifyPassword = await bcrypt.compare(password, userData.password);
+        if(!verifyPassword) throw new Error("Invalid Email or Password now");
 
         const token = generateToken(userData);
         console.log("Token Generated");

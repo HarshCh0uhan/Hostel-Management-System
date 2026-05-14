@@ -8,6 +8,6 @@ export const validateRegister = ({username, email, password}) => {
 } 
 
 export const validateLogin = ({email, password}) => {
-    if(!email || !password) throw new Error("Fill All Entries")
-    else if(!validator.isEmail(email)) throw new Error("Invalid Email");
+    // if(!email || !password) throw new Error("Fill All Entries")
+    if(!validator.isEmail(email)) throw new Error("Invalid Email");
 } 
