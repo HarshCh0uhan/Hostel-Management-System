@@ -8,7 +8,7 @@ import {
     assignStudent,
     removeStudent,
 } from "../controllers/room.controller.js";
-import { authenticate, authorizeAdmin } from "../middleware/auth.middleware.js";
+import { authenticate, authorizeAdmin } from "../middlewares/auth.middleware.js";
 
 const roomRouter = express.Router();
 
