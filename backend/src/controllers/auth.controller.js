@@ -1,124 +1,108 @@
-import {User} from "../models/user.js"
-import bcrypt from "bcryptjs"
+import { User } from "../models/user.js";
+import bcrypt from "bcryptjs";
 import { validateLogin, validateRegister } from "../utils/validation.js";
 import { generateToken } from "../utils/jwt.js";
 
+const COOKIE_OPTIONS = {
+    httpOnly: true,
+    secure: 'true',
+    sameSite: "None",
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+};
+
 export const register = async (req, res) => {
     try {
-        validateRegister(req.body)
+        validateRegister(req.body);
 
-        const {username, email, password} = req.body;
+        const { username, email, password } = req.body;
 
-        const existingUser = await User.findOne({
-            $or: [{username}, {email}]
-        })
+        const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+        if (existingUser) throw new Error("Username or email already in use");
 
-        if(existingUser) throw new Error("User Already Exist!!!")
+        const user = await User.create({ username, email, password });
 
-        const userData = await User.create({
-            username,
-            email,
-            password
-        })
+        const token = generateToken(user);
 
-        const token = generateToken(userData);
-        console.log("Token Generated")
-
-        res.cookie("token", token, {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'None',
-            maxAge: 7 * 24 * 60 * 60 * 1000
-        }).status(201).json({
+        res.cookie("token", token, COOKIE_OPTIONS).status(201).json({
             success: true,
-            message: "User Registered Successfully"
-        })
+            message: "Registered successfully",
+            user: { _id: user._id, username: user.username, email: user.email, role: user.role },
+        });
     } catch (err) {
-        console.error("Error: ", err.message);
-        res.status(400).json(err.message);
+        console.error("Register error:", err.message);
+        res.status(400).json({ success: false, message: err.message });
     }
-}
+};
 
 export const registerAdmin = async (req, res) => {
     try {
-        validateRegister(req.body)
+        validateRegister(req.body);
 
-        const {username, email, password, adminSecretKey} = req.body;
+        const { username, email, password, adminSecretKey } = req.body;
 
-        if(adminSecretKey !== process.env.ADMIN_SECRET_KEY) throw new Error("Invalid Secret Key!!!")
+        if (adminSecretKey !== process.env.ADMIN_SECRET_KEY) {
+            throw new Error("Invalid admin secret key");
+        }
 
-        const existingAdmin = await User.findOne({
-            $or: [{username}, {email}]
-        })
+        const existingAdmin = await User.findOne({ $or: [{ username }, { email }] });
+        if (existingAdmin) throw new Error("Admin with this username or email already exists");
 
-        if(existingAdmin) throw new Error("Admin Already Exist!!!");
+        const admin = await User.create({ username, email, password, role: "admin" });
+        const token = generateToken(admin);
 
-        const admin = await User.create({
-            username,
-            email,
-            password,
-            role: 'admin'
-        })
-
-        const token = generateToken(admin)
-        console.log('Token Generated');
-        
-        res.cookie('token', token, {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'None',
-            maxAge: 7 * 24 * 60 * 60 * 1000
-        }).status(201).json({
+        res.cookie("token", token, COOKIE_OPTIONS).status(201).json({
             success: true,
-            message: "Admin Registered Successfully"
-        })
+            message: "Admin registered successfully",
+            user: { _id: admin._id, username: admin.username, email: admin.email, role: admin.role },
+        });
     } catch (err) {
-        console.error("Error: ", err.message);
-        res.status(400).json(err.message);
+        console.error("Register admin error:", err.message);
+        res.status(400).json({ success: false, message: err.message });
     }
-}
+};
 
 export const login = async (req, res) => {
     try {
-        validateLogin(req.body)
+        validateLogin(req.body);
 
-        const {email, password} = req.body;
+        const { email, password } = req.body;
 
-        const userData = await User.findOne({email}).select('+password');
-        if(!userData) throw new Error("Invalid Email or Password")
+        const user = await User.findOne({ email }).select("+password");
+        if (!user) throw new Error("Invalid email or password");
 
-        const verifyPassword = await bcrypt.compare(password, userData.password);
-        if(!verifyPassword) throw new Error("Invalid Email or Password now");
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) throw new Error("Invalid email or password");
 
-        const token = generateToken(userData);
-        console.log("Token Generated");
+        const token = generateToken(user);
 
-        res.cookie("token", token, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "None",
-            maxAge: 7 * 24 * 60 * 60 * 1000
-        }).status(201).json({
+        res.cookie("token", token, COOKIE_OPTIONS).status(200).json({
             success: true,
-            message: "Login Successfull"
-        })
-
+            message: "Login successful",
+            user: { _id: user._id, username: user.username, email: user.email, role: user.role },
+        });
     } catch (err) {
-        console.error("Error: ", err.message);
-        res.status(400).json(err.message);
+        console.error("Login error:", err.message);
+        res.status(400).json({ success: false, message: err.message });
     }
-}
+};
 
 export const logout = async (req, res) => {
     try {
-        res.clearCookie('token', {
-            path: '/'
-        }).status(200).json({
+        res.clearCookie("token", { path: "/" }).status(200).json({
             success: true,
-            message: "Logout Successfull"
-        })
+            message: "Logged out successfully",
+        });
     } catch (err) {
-        console.error("Error: ", err.message);
-        res.status(400).json(err.message);
+        console.error("Logout error:", err.message);
+        res.status(400).json({ success: false, message: err.message });
     }
-}
+};
+
+export const getMe = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id).populate("room");
+        res.status(200).json({ success: true, user });
+    } catch (err) {
+        res.status(400).json({ success: false, message: err.message });
+    }
+};
