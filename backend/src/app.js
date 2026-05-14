@@ -7,12 +7,17 @@ import roomRouter from "./routes/room.route.js";
 import complaintRouter from "./routes/complain.route.js";
 import leaveRouter from "./routes/leave.route.js";
 import adminRouter from "./routes/admin.route.js";
+import cors from "cors";
 
 dotenv.config();
 const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true,
+}));
 
 app.use("/api/auth", authRouter);
 app.use("/api/rooms", roomRouter);
