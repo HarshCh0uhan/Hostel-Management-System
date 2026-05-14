@@ -4,6 +4,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import RegisterAdmin from "./pages/RegisterAdmin";
 import StudentDashboard from "./pages/student/Dashboard";
 import StudentRooms from "./pages/student/Rooms";
 import StudentComplaints from "./pages/student/Complaints";
@@ -30,6 +31,7 @@ export default function App() {
       {/* Public routes */}
       <Route path="/login" element={!user ? <Login /> : <Navigate to="/" replace />} />
       <Route path="/register" element={!user ? <Register /> : <Navigate to="/" replace />} />
+      <Route path="/register-admin" element={!user ? <RegisterAdmin /> : <Navigate to="/" replace />} />
 
       {/* Protected routes */}
       <Route element={<ProtectedRoute />}>
