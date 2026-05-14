@@ -4,7 +4,7 @@ import cookieParser from "cookie-parser";
 import connectDB from "./config/db.js";
 import authRouter from "./routes/auth.route.js";
 import roomRouter from "./routes/room.route.js";
-import complaintRouter from "./routes/complaint.route.js";
+import complaintRouter from "./routes/complain.route.js";
 import leaveRouter from "./routes/leave.route.js";
 import adminRouter from "./routes/admin.route.js";
 
