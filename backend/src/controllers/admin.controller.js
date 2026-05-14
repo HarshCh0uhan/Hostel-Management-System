@@ -1,6 +1,6 @@
 import { User } from "../models/user.js";
 import { Room } from "../models/room.js";
-import { Complaint } from "../models/complaint.js";
+import { Complaint } from "../models/complain.js";
 import { Leave } from "../models/leave.js";
 
 // GET /api/admin/dashboard — Admin: summary stats

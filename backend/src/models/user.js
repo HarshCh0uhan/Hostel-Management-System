@@ -20,7 +20,6 @@ const userSchema = new mongoose.Schema(
             type: String,
             required: true,
             minlength: 8,
-            // BUG FIX: was 'select: true' — password hash was leaking in every query
             select: false,
         },
         role: {
@@ -28,7 +27,6 @@ const userSchema = new mongoose.Schema(
             enum: ["user", "admin"],
             default: "user",
         },
-        // Reference to assigned room (null if not assigned)
         room: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Room",

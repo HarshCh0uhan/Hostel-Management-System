@@ -1,4 +1,4 @@
-import { Complaint } from "../models/complaint.js";
+import { Complaint } from "../models/complain.js";
 
 // POST /api/complaints — Student: raise a complaint
 export const createComplaint = async (req, res) => {
